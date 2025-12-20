@@ -1,0 +1,124 @@
+const Patient = require('../models/patientModel')
+
+const create = async(req,res)=>{
+    const {name,age,doctorname,gender,mobileNumber}=req.body
+
+    if(!name || !age || !doctorname || !gender  || !mobileNumber){
+        return res.status(400).json({
+            success:false,
+            message:"All field Must Required"
+        })
+    }
+
+    if(mobileNumber.length < 10){
+        return res.status(400).json({
+            success:false,
+            message:"Mobile number must be 10 digit"
+        })
+    }
+    try{
+        const foundPatient=await Patient.findOne({mobileNumber})
+
+        if(foundPatient){
+            return res.status(400).json({
+                success:false,
+                message:"Patient Already Exist with same Mobile Number"
+            })
+        }
+
+        await Patient.create({name,age,doctorname,gender,mobileNumber})
+        res.status(200).json({
+            success:true,
+            message:"Patient created successfully",
+        })
+    }
+    catch(err){
+        res.status(400).json({
+            success:false,
+            message:err.message
+        })
+
+    }
+}
+
+const view= async(req,res)=>{
+    try{
+        const details=await Patient.find()
+        res.status(200).json({
+            success:true,
+            message:"Details Fetched",
+            data:details
+        })
+
+    }catch(err){
+        return res.status(500).json({
+            success:false,
+            message:err.message
+        })
+    }
+}
+
+const deletedata=async(req,res)=>{
+    const {id}=req.params
+    try{
+        
+        const foundPatient=await Patient.findById(id)
+        if(!foundPatient){
+            return res.status(400).json({
+                success:false,
+                message:"Invalid id"
+            })
+        }
+
+        await Patient.findByIdAndDelete(id)
+        res.status(200).json({
+            success:true,
+            message:"Data deleted Successfully"
+        })
+        
+        
+    }catch(err){
+        return res.status(400).json({
+            success:false,
+            message:err.message
+        })
+
+    }
+}
+
+const updatedata = async(req,res)=>{
+
+    const {id}=req.params
+    const {name,age,doctorname,gender,mobileNumber}=req.body
+
+    try{
+        const foundPatient = await Patient.findById(id)
+    if(!foundPatient){
+        return res.status(400).json({
+            success:false,
+            message:"No Patient Found"
+        })
+    }
+
+    await Patient.findByIdAndUpdate(
+        id,
+        {name,age,doctorname,gender,mobileNumber},
+        {new:true}
+    )
+
+    res.status(200).json({
+        success:true,
+        message:"User Updated Successfully"
+    })
+    }
+    catch(err){
+        res.status(500).json({
+            success:false,
+            message:err.message
+        })
+
+    }
+}
+
+
+module.exports={create,view,deletedata,updatedata}
