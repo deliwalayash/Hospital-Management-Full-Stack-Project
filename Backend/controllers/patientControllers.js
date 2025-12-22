@@ -1,9 +1,9 @@
 const Patient = require('../models/patientModel')
 
 const create = async(req,res)=>{
-    const {name,age,doctorname,gender,mobileNumber}=req.body
+    const {name,age,doctorname,gender,mobileNumber,appointmentDate}=req.body
 
-    if(!name || !age || !doctorname || !gender  || !mobileNumber){
+    if(!name || !age || !doctorname || !gender  || !mobileNumber || !appointmentDate ){
         return res.status(400).json({
             success:false,
             message:"All field Must Required"
@@ -26,7 +26,7 @@ const create = async(req,res)=>{
             })
         }
 
-        await Patient.create({name,age,doctorname,gender,mobileNumber})
+        await Patient.create({name,age,doctorname,gender,mobileNumber,appointmentDate})
         res.status(200).json({
             success:true,
             message:"Patient created successfully",
@@ -89,7 +89,7 @@ const deletedata=async(req,res)=>{
 const updatedata = async(req,res)=>{
 
     const {id}=req.params
-    const {name,age,doctorname,gender,mobileNumber}=req.body
+    const {name,age,doctorname,gender,mobileNumber,appointmentDate}=req.body
 
     try{
         const foundPatient = await Patient.findById(id)
@@ -102,7 +102,7 @@ const updatedata = async(req,res)=>{
 
     await Patient.findByIdAndUpdate(
         id,
-        {name,age,doctorname,gender,mobileNumber},
+        {name,age,doctorname,gender,mobileNumber,appointmentDate},
         {new:true}
     )
 

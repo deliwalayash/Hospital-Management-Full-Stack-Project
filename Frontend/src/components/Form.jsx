@@ -1,33 +1,65 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useState } from 'react'
 
 const Form = () => {
+
+  const [patient,setPatient]=useState({
+    name:"",
+    age:"",
+    doctorname:"",
+    mobileNumber:"",
+    gender:"",
+    appointmentDate:"",
+
+  })
+
+  const handleChange =(e)=>{
+    if(e.target.type == "radio"){
+      setPatient({...patient,[e.target.name]:e.target.value})
+    }
+    else{
+      setPatient({...patient,[e.target.id]:e.target.value})
+    }
+
+  }
+
+  const handleSubmit = async(e)=>{
+    e.preventDefault()
+    try{
+      const res=await axios.post("http://localhost:4000/api/create",patient)
+      console.log(res.data)
+      alert("Pateint added successfully")
+    }
+    catch(err){
+      console.log(err.message)
+    }
+    
+  }
   return (
     <div>
-      
-
-<form className="max-w-sm mx-auto">
+<form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
     <h1 className='text-4xl mt-36 mb-10 font-semibold text-center'>Patients Details</h1>
 
   <div className="mb-5">
     <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-    <input type="text" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@flowbite.com" required />
+    <input type="text" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@flowbite.com" required onChange={handleChange} />
   </div>
 
 
   <div className="mb-5">
     <label htmlFor="age" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Age</label>
-    <input type="number" id="age" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+    <input type="number" id="age" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required onChange={handleChange} />
   </div>
 
 
   <div className="mb-5">
     <label htmlFor="doctorname" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Doctor Name</label>
-    <input type="text" id="doctorname" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+    <input type="text" id="doctorname" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required onChange={handleChange} />
   </div>
 
   <div className="mb-5">
     <label htmlFor="mobilenumber" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mobile Number</label>
-    <input type="number" id="mobilenumber" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+    <input type="number" id="mobileNumber" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required onChange={handleChange} />
   </div>
 
 
@@ -35,12 +67,12 @@ const Form = () => {
   <p className="mb-2 text-sm font-medium text-gray-900">Gender</p>
 
   <label className="flex items-center gap-2 mb-2">
-    <input type="radio" id="male" name="gender" value="male" required />
+    <input type="radio" id="male" name="gender" value="male" required  onChange={handleChange}/>
     Male
   </label>
 
   <label className="flex items-center gap-2">
-    <input type="radio" id="female" name="gender" value="female" required />
+    <input type="radio" id="female" name="gender" value="female" required onChange={handleChange}/>
     Female
   </label>
 </div>
@@ -50,7 +82,9 @@ const Form = () => {
     type="date"
     name="appointmentDate"
     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-    required min={new Date().toISOString().split("T")[0]}
+    id="appointmentDate"
+    onChange={handleChange}
+    required min={new Date().toISOString().split("T")[0] }
   />
 </div>
 

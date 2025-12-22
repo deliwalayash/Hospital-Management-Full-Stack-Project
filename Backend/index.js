@@ -1,8 +1,11 @@
 const PORT=4000
 const express=require('express')
 const app=express()
+const cors=require('cors')
+app.use(cors())
 const connetDB=require('./config/connectDB')
 app.use(express.json())
+
 
 const routes=require('./routes/patientRoutes')
 
