@@ -120,5 +120,31 @@ const updatedata = async(req,res)=>{
     }
 }
 
+const viewbyid = async (req, res) => {
+  try {
+    const { id } = req.params
 
-module.exports={create,view,deletedata,updatedata}
+    const foundUser = await Patient.findById(id)
+
+    if (!foundUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      data: foundUser
+    })
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "Invalid ID"
+    })
+  }
+}
+
+
+
+module.exports={create,view,deletedata,updatedata,viewbyid}
