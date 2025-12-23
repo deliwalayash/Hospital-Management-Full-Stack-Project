@@ -4,6 +4,7 @@ const patientSchema= new mongoose.Schema({
     name:{
         type:String,
         required:true,
+        trim:true
     },
     age:{
         type:Number,
@@ -11,10 +12,12 @@ const patientSchema= new mongoose.Schema({
     },
     doctorname:{
         type:String,
-        required:true
+        required:true,
+        trim:true
     },
     gender:{
         type:String,
+        enum:["male","female"],
         required:true
     },
     mobileNumber:{
@@ -23,9 +26,10 @@ const patientSchema= new mongoose.Schema({
         required:true
     },
     appointmentDate:{
-        type:String,
+        type:Date,
         required:true
     }
-})
+},
+{timestamps:true})
 
 module.exports = mongoose.model("Patient",patientSchema)

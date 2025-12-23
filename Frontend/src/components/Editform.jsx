@@ -32,7 +32,7 @@ const Form = () => {
     }
     getPatient()
 
-  },[])
+  },[id])
 
 
 
@@ -113,7 +113,7 @@ const Form = () => {
     id="appointmentDate"
     value={patient.appointmentDate}
     onChange={handleChange}
-    required min={new Date().toISOString().split("T")[0] }
+    required 
   />
 </div>
 
