@@ -25,11 +25,17 @@ const Form = () => {
     }
 
   }
+  const token = localStorage.getItem("token")
+
 
   const handleSubmit = async(e)=>{
     e.preventDefault()
     try{
-      const res=await axios.post("http://localhost:4000/api/create",patient)
+      const res=await axios.post("http://localhost:4000/api/create",patient,{
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
       console.log(res.data)
       alert("Pateint added successfully")
       navigate('/view')

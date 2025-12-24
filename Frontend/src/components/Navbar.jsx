@@ -1,7 +1,20 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const Navbar = () => {
+
+
+  const [token,setToken]=useState(null)
+  useEffect(()=>{
+    setToken(localStorage.getItem("token"))
+  },[])
+
+  const handleLogout = () => {
+  localStorage.removeItem("token")
+  localStorage.removeItem("user")
+  window.location.href = "/login"
+}
+
   return (
 <nav className="bg-white border-gray-200 dark:bg-gray-900">
   <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -20,12 +33,31 @@ const Navbar = () => {
         <li>
           <Link to={'/'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Home</Link>
         </li>
-        <li>
+       {
+        token && (
+          <>
+           <li>
           <Link to={'/book'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Book Appointment</Link>
         </li>
         <li>
           <Link to={'/view'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">View Appointment</Link>
         </li>
+        <button className='block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500' onClick={handleLogout}>Logout</button>
+          </>
+        )
+       }
+       {
+        !token && (
+          <>
+           <li>
+          <Link to={'/signup'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Sign Up</Link>
+        </li>
+        <li>
+          <Link to={'/login'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Login</Link>
+        </li>
+          </>
+        ) 
+       }
       
       </ul>
     </div>

@@ -7,11 +7,17 @@ const Viewpatients = () => {
   const [patients,setPatients]=useState([])
 
   const navigate=useNavigate()
+  const token = localStorage.getItem("token")
+
 
 useEffect(()=>{
   const fetchPatients= async()=>{
    try{
-     const res=await axios.get('http://localhost:4000/api/view')
+     const res=await axios.get('http://localhost:4000/api/view',{
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
     console.log(res.data.data)
     setPatients(res.data.data)
    }
@@ -82,7 +88,7 @@ const deleteData=async (id)=>{
                     {curEle.mobileNumber}
                 </td>
                 <td className="px-6 py-4">
-                    {curEle.appointmentDate}
+                    {curEle.appointmentDate.split("T")[0]}
                 </td>
                 <td className="px-6 py-4">
                     <button type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onClick={()=>{navigate(`/edit/${curEle._id}`)}}>Edit</button>
