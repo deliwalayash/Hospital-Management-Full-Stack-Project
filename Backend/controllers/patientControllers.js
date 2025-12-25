@@ -1,150 +1,150 @@
 const Patient = require('../models/patientModel')
 
-const create = async(req,res)=>{
-    const {name,age,doctorname,gender,mobileNumber,appointmentDate}=req.body
+const create = async (req, res) => {
+    const { name, age, doctorname, gender, mobileNumber, appointmentDate } = req.body
 
-    if(!name || !age || !doctorname || !gender  || !mobileNumber || !appointmentDate ){
+    if (!name || !age || !doctorname || !gender || !mobileNumber || !appointmentDate) {
         return res.status(400).json({
-            success:false,
-            message:"All field Must Required"
+            success: false,
+            message: "All field Must Required"
         })
     }
 
-    if(mobileNumber.length < 10){
+    if (mobileNumber.length < 10) {
         return res.status(400).json({
-            success:false,
-            message:"Mobile number must be 10 digit"
+            success: false,
+            message: "Mobile number must be 10 digit"
         })
     }
-    try{
-        const foundPatient=await Patient.findOne({mobileNumber})
+    try {
+        const foundPatient = await Patient.findOne({ mobileNumber })
 
-        if(foundPatient){
+        if (foundPatient) {
             return res.status(400).json({
-                success:false,
-                message:"Patient Already Exist with same Mobile Number"
+                success: false,
+                message: "Patient Already Exist with same Mobile Number"
             })
         }
 
-        await Patient.create({name,age,doctorname,gender,mobileNumber,appointmentDate})
+        await Patient.create({ name, age, doctorname, gender, mobileNumber, appointmentDate,user:req.user.id })
         res.status(200).json({
-            success:true,
-            message:"Patient created successfully",
+            success: true,
+            message: "Patient created successfully",
         })
     }
-    catch(err){
+    catch (err) {
         res.status(400).json({
-            success:false,
-            message:err.message
+            success: false,
+            message: err.message
         })
 
     }
 }
 
-const view= async(req,res)=>{
-    try{
-        const details=await Patient.find()
+const view = async (req, res) => {
+    try {
+        const details = await Patient.find({user:req.user.id})
         res.status(200).json({
-            success:true,
-            message:"Details Fetched",
-            data:details
+            success: true,
+            message: "Details Fetched",
+            data: details
         })
 
-    }catch(err){
+    } catch (err) {
         return res.status(500).json({
-            success:false,
-            message:err.message
+            success: false,
+            message: err.message
         })
     }
 }
 
-const deletedata=async(req,res)=>{
-    const {id}=req.params
-    try{
-        
-        const foundPatient=await Patient.findById(id)
-        if(!foundPatient){
+const deletedata = async (req, res) => {
+    const { id } = req.params
+    try {
+
+        const foundPatient = await Patient.findById(id)
+        if (!foundPatient) {
             return res.status(400).json({
-                success:false,
-                message:"Invalid id"
+                success: false,
+                message: "Invalid id"
             })
         }
 
         await Patient.findByIdAndDelete(id)
         res.status(200).json({
-            success:true,
-            message:"Data deleted Successfully"
+            success: true,
+            message: "Data deleted Successfully"
         })
-        
-        
-    }catch(err){
+
+
+    } catch (err) {
         return res.status(400).json({
-            success:false,
-            message:err.message
+            success: false,
+            message: err.message
         })
 
     }
 }
 
-const updatedata = async(req,res)=>{
+const updatedata = async (req, res) => {
 
-    const {id}=req.params
-    const {name,age,doctorname,gender,mobileNumber,appointmentDate}=req.body
+    const { id } = req.params
+    const { name, age, doctorname, gender, mobileNumber, appointmentDate } = req.body
 
-    try{
+    try {
         const foundPatient = await Patient.findById(id)
-    if(!foundPatient){
-        return res.status(400).json({
-            success:false,
-            message:"No Patient Found"
+        if (!foundPatient) {
+            return res.status(400).json({
+                success: false,
+                message: "No Patient Found"
+            })
+        }
+
+        await Patient.findByIdAndUpdate(
+            id,
+            { name, age, doctorname, gender, mobileNumber, appointmentDate },
+            { new: true }
+        )
+
+        res.status(200).json({
+            success: true,
+            message: "User Updated Successfully"
         })
     }
-
-    await Patient.findByIdAndUpdate(
-        id,
-        {name,age,doctorname,gender,mobileNumber,appointmentDate},
-        {new:true}
-    )
-
-    res.status(200).json({
-        success:true,
-        message:"User Updated Successfully"
-    })
-    }
-    catch(err){
+    catch (err) {
         res.status(500).json({
-            success:false,
-            message:err.message
+            success: false,
+            message: err.message
         })
 
     }
 }
 
 const viewbyid = async (req, res) => {
-  try {
-    const { id } = req.params
+    try {
+        const { id } = req.params
 
-    const foundUser = await Patient.findById(id)
+        const foundUser = await Patient.findById(id)
 
-    if (!foundUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      })
+        if (!foundUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            data: foundUser
+        })
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            message: "Invalid ID"
+        })
     }
-
-    res.status(200).json({
-      success: true,
-      data: foundUser
-    })
-  } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: "Invalid ID"
-    })
-  }
 }
 
 
 
-module.exports={create,view,deletedata,updatedata,viewbyid}
+module.exports = { create, view, deletedata, updatedata, viewbyid }
