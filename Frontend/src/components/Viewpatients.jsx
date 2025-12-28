@@ -32,7 +32,13 @@ useEffect(()=>{
 const deleteData=async (id)=>{
 
   try{
-    await axios.delete(`http://localhost:4000/api/delete/${id}`)
+    await axios.delete(`http://localhost:4000/api/delete/${id}`,
+       {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+    )
     setPatients(p =>p.filter(p=>p._id !=id))
     alert("data deleted successfully")
     

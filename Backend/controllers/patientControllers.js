@@ -62,7 +62,7 @@ const deletedata = async (req, res) => {
     const { id } = req.params
     try {
 
-        const foundPatient = await Patient.findById(id)
+        const foundPatient = await Patient.findOne({_id:id,user:req.user.id})
         if (!foundPatient) {
             return res.status(400).json({
                 success: false,
@@ -70,7 +70,7 @@ const deletedata = async (req, res) => {
             })
         }
 
-        await Patient.findByIdAndDelete(id)
+        await foundPatient.deleteOne()
         res.status(200).json({
             success: true,
             message: "Data deleted Successfully"
