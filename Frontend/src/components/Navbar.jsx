@@ -1,70 +1,71 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
 
-
-  const [token,setToken]=useState(null)
-  useEffect(()=>{
-    setToken(localStorage.getItem("token"))
-  },[])
+  // ✅ READ TOKEN DIRECTLY (no state, no useEffect)
+  const token = localStorage.getItem("token");
 
   const handleLogout = () => {
-  localStorage.removeItem("token")
-  localStorage.removeItem("user")
-  window.location.href = "/login"
-}
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   return (
-<nav className="bg-white border-gray-200 dark:bg-gray-900">
-  <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-    <a href="https://v3.flowbite.com/" className="flex items-center space-x-3 rtl:space-x-reverse">
-      <img src="https://flowbite.com/images/logo.svg" className="h-8" alt="Flowbite Logo" />
-      <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
-    </a>
-    <button data-collapse-toggle="navbar-default" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
-      <span className="sr-only">Open main menu</span>
-      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M1 1h15M1 7h15M1 13h15" />
-      </svg>
-    </button>
-    <div className="hidden w-full md:block md:w-auto" id="navbar-default">
-      <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-        <li>
-          <Link to={'/'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Home</Link>
-        </li>
-       {
-        token && (
-          <>
-           <li>
-          <Link to={'/book'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Book Appointment</Link>
-        </li>
-        <li>
-          <Link to={'/view'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">View Appointment</Link>
-        </li>
-        <button className='block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500' onClick={handleLogout}>Logout</button>
-          </>
-        )
-       }
-       {
-        !token && (
-          <>
-           <li>
-          <Link to={'/signup'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Sign Up</Link>
-        </li>
-        <li>
-          <Link to={'/login'} className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Login</Link>
-        </li>
-          </>
-        ) 
-       }
-      
-      </ul>
-    </div>
-  </div>
-</nav>
-   
-  )
-}
+    <nav className="sticky top-0 z-50 backdrop-blur bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-800">
+      <div className="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
 
-export default Navbar
+        {/* LOGO */}
+        <Link to="/" className="flex items-center gap-2">
+          <span className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">
+            MediCare
+          </span>
+          <span className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
+            Hospital System
+          </span>
+        </Link>
+
+        {/* DESKTOP MENU */}
+        <div className="hidden md:flex items-center gap-8">
+          <Link to="/" className="nav-link">Home</Link>
+
+          {token ? (
+            <>
+              <Link to="/book" className="nav-link">
+                Book Appointment
+              </Link>
+
+              <Link to="/view" className="nav-link">
+                View Appointment
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="nav-link">
+                Login
+              </Link>
+
+              <Link
+                to="/signup"
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;

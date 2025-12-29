@@ -9,12 +9,13 @@ const authRoutes=require('./routes/authRoutes')
 const dotenv=require('dotenv')
 dotenv.config()
 
-
+const doctorRoutes=require('./routes/doctorRoutes')
 const routes=require('./routes/patientRoutes')
 
 connetDB()
 
 app.use('/api/auth',authRoutes)
+app.use('/api/doctor',doctorRoutes)
 
 app.use('/api',routes)
 

@@ -10,6 +10,7 @@ import Home from './components/Home'
 import SignUp from './components/SignUp'
 import Login from './components/Login'
 import Privateroutes from './routes/Privateroutes'
+import{ Toaster }from 'sonner'
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
   return (
     <>
   <BrowserRouter>
+      <Toaster richColors position="top-right" />
     <Navbar></Navbar>
   <Routes>
     <Route path='/' element={<Home></Home>}></Route>

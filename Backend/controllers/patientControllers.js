@@ -87,38 +87,35 @@ const deletedata = async (req, res) => {
 }
 
 const updatedata = async (req, res) => {
+  const { id } = req.params
 
-    const { id } = req.params
-    const { name, age, doctorname, gender, mobileNumber, appointmentDate } = req.body
+  try {
+    const updatedPatient = await Patient.findOneAndUpdate(
+      { _id: id, user: req.user.id },   // 🔐 ownership check
+      req.body,
+      { new: true }
+    )
 
-    try {
-        const foundPatient = await Patient.findById(id)
-        if (!foundPatient) {
-            return res.status(400).json({
-                success: false,
-                message: "No Patient Found"
-            })
-        }
-
-        await Patient.findByIdAndUpdate(
-            id,
-            { name, age, doctorname, gender, mobileNumber, appointmentDate },
-            { new: true }
-        )
-
-        res.status(200).json({
-            success: true,
-            message: "User Updated Successfully"
-        })
+    if (!updatedPatient) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to update this appointment"
+      })
     }
-    catch (err) {
-        res.status(500).json({
-            success: false,
-            message: err.message
-        })
 
-    }
+    res.status(200).json({
+      success: true,
+      message: "Appointment updated successfully"
+    })
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
 }
+
 
 const viewbyid = async (req, res) => {
     try {

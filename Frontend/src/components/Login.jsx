@@ -1,87 +1,170 @@
-import React from 'react'
-import { useState } from 'react'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "sonner";
+
 const Login = () => {
+  const navigate = useNavigate();
 
-    const navigate=useNavigate()
-     const [user,setUser]=useState({
-        email:"",
-        password:""
-    })
+  const [user, setUser] = useState({
+    email: "",
+    password: "",
+  });
 
-    const handleChange = (e)=>{
-        setUser({...user,[e.target.id]:e.target.value})
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+
+    setUser({ ...user, [id]: value });
+    setErrors({ ...errors, [id]: "" }); // clear error on typing
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    if (!user.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(user.email)) {
+      newErrors.email = "Enter a valid email address";
     }
 
-    const handleSubmit=async(e)=>{
-
-        e.preventDefault()
-        try{
-            const res=await axios.post('http://localhost:4000/api/auth/login',user)
-            console.log(res.data)
-            localStorage.setItem("token",res.data.token)
-            localStorage.setItem("user",JSON.stringify(res.data.user))
-            alert("login successful")
-            window.location='/'
-            
-        }
-        catch(err){
-            console.log(err.response.data.message)
-        }
-
+    if (!user.password.trim()) {
+      newErrors.password = "Password is required";
     }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    try {
+      setLoading(true);
+
+      const res = await axios.post(
+        "http://localhost:4000/api/auth/login",
+        user
+      );
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      toast.success("Login successful 👋");
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (err) {
+      const message =
+        err?.response?.data?.message ||
+        "Invalid email or password";
+
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div>
-        <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
-        <h1 className="text-4xl mt-36 mb-10 font-semibold text-center">
-          Login Details
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-800">
+
+        {/* HEADER */}
+        <h1 className="text-3xl font-extrabold text-center mb-2">
+          Welcome Back
         </h1>
+        <p className="text-center text-gray-500 dark:text-gray-400 mb-8">
+          Login to Hospital Management System
+        </p>
 
-        <div className="mb-5">
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            required
-            onChange={handleChange}
-            value={user.email}
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="password"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            required
-            onChange={handleChange}
-            value={user.password}
-          />
-        </div>
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="space-y-5">
 
-        <div className="text-center">
+          {/* EMAIL */}
+          <div>
+            <label className="block mb-1 text-sm font-medium">
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={user.email}
+              onChange={handleChange}
+              placeholder="doctor@hospital.com"
+              className={`w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800
+                border text-gray-900 dark:text-white
+                focus:outline-none
+                ${errors.email
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-gray-300 dark:border-gray-700 focus:border-blue-500"}
+              `}
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.email}
+              </p>
+            )}
+          </div>
+
+          {/* PASSWORD */}
+          <div>
+            <label className="block mb-1 text-sm font-medium">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={user.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              className={`w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800
+                border text-gray-900 dark:text-white
+                focus:outline-none
+                ${errors.password
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-gray-300 dark:border-gray-700 focus:border-blue-500"}
+              `}
+            />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.password}
+              </p>
+            )}
+          </div>
+
+          {/* BUTTON */}
           <button
             type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 me-6"
+            disabled={loading}
+            className={`w-full py-3 rounded-xl text-white font-semibold transition
+              ${loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"}
+            `}
           >
-            Submit
+            {loading ? "Logging in..." : "Login"}
           </button>
-        </div>
-      </form>
-      
-   </div>
-  )
-}
-export default Login
+        </form>
+
+        {/* FOOTER */}
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+          Don’t have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Sign Up
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
