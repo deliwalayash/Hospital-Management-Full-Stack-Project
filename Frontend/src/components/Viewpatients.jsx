@@ -1,4 +1,4 @@
-import axios from 'axios'
+import api from '../api/api'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -7,33 +7,23 @@ const Viewpatients = () => {
   const [search, setSearch] = useState("")
 
   const navigate = useNavigate()
-  const token = localStorage.getItem("token")
+
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const res = await axios.get('http://localhost:4000/api/view', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+      const res = await api.get("/view")
         setPatients(res.data.data)
       } catch (err) {
         console.log(err.response)
       }
     }
-
     fetchPatients()
   }, [])
 
   const deleteData = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/api/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
+   await api.delete(`/delete/${id}`)
       setPatients(prev => prev.filter(p => p._id !== id))
       alert("Patient deleted successfully")
     } catch (err) {
@@ -44,7 +34,7 @@ const Viewpatients = () => {
   // 🔍 search logic
   const filteredPatients = patients.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
-    p.doctorname.toLowerCase().includes(search.toLowerCase())
+    p.doctorname?.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
@@ -95,7 +85,10 @@ const Viewpatients = () => {
                       {curEle.name}
                     </td>
                     <td className="px-6 py-4">{curEle.age}</td>
-                    <td className="px-6 py-4">{curEle.doctorname}</td>
+                    <td className="px-6 py-4">
+                    {curEle.doctor?.name} ({curEle.doctor?.specialization})
+                    </td>
+
                     <td className="px-6 py-4">{curEle.mobileNumber}</td>
                     <td className="px-6 py-4">
                       {curEle.appointmentDate.split("T")[0]}

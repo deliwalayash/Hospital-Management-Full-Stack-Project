@@ -10,7 +10,9 @@ import Home from './components/Home'
 import SignUp from './components/SignUp'
 import Login from './components/Login'
 import Privateroutes from './routes/Privateroutes'
+import DoctorLogin from "./components/DoctorLogin";
 import{ Toaster }from 'sonner'
+import DoctorDashboard from './components/DoctorDashboard'
 
 function App() {
 
@@ -28,6 +30,7 @@ function App() {
     <Route path='/view' element={<Privateroutes><Viewpatients></Viewpatients></Privateroutes>}></Route>
     <Route path='/signup' element={<SignUp></SignUp>}></Route>
     <Route path='/login' element={<Login></Login>}></Route>
+    <Route path='/doctor/login' element={<DoctorLogin></DoctorLogin>}></Route>
     <Route path='/edit/:id' element={<Editform></Editform>}></Route>
   </Routes>
   </BrowserRouter>

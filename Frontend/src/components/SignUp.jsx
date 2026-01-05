@@ -1,7 +1,8 @@
-import axios from "axios";
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
+import api from "../api/api";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -54,10 +55,8 @@ const SignUp = () => {
     try {
       setLoading(true);
 
-      await axios.post(
-        "http://localhost:4000/api/auth/signup",
-        user
-      );
+     await api.post("/auth/signup", user)
+
 
       toast.success("Account created successfully 🎉");
 

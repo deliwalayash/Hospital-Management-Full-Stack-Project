@@ -10,11 +10,6 @@ const patientSchema= new mongoose.Schema({
         type:Number,
         required:true,
     },
-    doctorname:{
-        type:String,
-        required:true,
-        trim:true
-    },
     gender:{
         type:String,
         enum:["male","female"],
@@ -33,7 +28,13 @@ const patientSchema= new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true
-}
+    },
+    doctor:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Doctor",
+        required:true
+    
+    }
 },
 {timestamps:true})
 

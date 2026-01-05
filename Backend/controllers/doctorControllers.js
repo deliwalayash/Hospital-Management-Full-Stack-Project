@@ -71,5 +71,25 @@ const createDoctor = async (req, res) => {
     message: "Doctor created successfully"
   })
 }
+const getDoctorAppointments = async (req, res) => {
+  try {
+    // req.user.id comes from JWT (doctor login)
+    const appointments = await Patient.find({
+      doctor: req.user.id
+    })
+      .populate("user", "name email")
+      .sort({ appointmentDate: 1 })
 
-module.exports =   {createDoctor ,loginDoctor }
+    res.status(200).json({
+      success: true,
+      data: appointments
+    })
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
+}
+
+module.exports =   {createDoctor ,loginDoctor,getDoctorAppointments}

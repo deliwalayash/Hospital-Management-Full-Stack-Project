@@ -1,102 +1,140 @@
 const Patient = require('../models/patientModel')
+const Doctor = require('../models/doctorModel')
 
+/**
+ * CREATE APPOINTMENT (Patient)
+ */
 const create = async (req, res) => {
-    const { name, age, doctorname, gender, mobileNumber, appointmentDate } = req.body
-
-    if (!name || !age || !doctorname || !gender || !mobileNumber || !appointmentDate) {
-        return res.status(400).json({
-            success: false,
-            message: "All field Must Required"
-        })
-    }
-
-    if (mobileNumber.length < 10) {
-        return res.status(400).json({
-            success: false,
-            message: "Mobile number must be 10 digit"
-        })
-    }
-    try {
-        const foundPatient = await Patient.findOne({ mobileNumber })
-
-        if (foundPatient) {
-            return res.status(400).json({
-                success: false,
-                message: "Patient Already Exist with same Mobile Number"
-            })
-        }
-
-        await Patient.create({ name, age, doctorname, gender, mobileNumber, appointmentDate,user:req.user.id })
-        res.status(200).json({
-            success: true,
-            message: "Patient created successfully",
-        })
-    }
-    catch (err) {
-        res.status(400).json({
-            success: false,
-            message: err.message
-        })
-
-    }
-}
-
-const view = async (req, res) => {
-    try {
-        const details = await Patient.find({user:req.user.id})
-        res.status(200).json({
-            success: true,
-            message: "Details Fetched",
-            data: details
-        })
-
-    } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: err.message
-        })
-    }
-}
-
-const deletedata = async (req, res) => {
-    const { id } = req.params
-    try {
-
-        const foundPatient = await Patient.findOne({_id:id,user:req.user.id})
-        if (!foundPatient) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid id"
-            })
-        }
-
-        await foundPatient.deleteOne()
-        res.status(200).json({
-            success: true,
-            message: "Data deleted Successfully"
-        })
-
-
-    } catch (err) {
-        return res.status(400).json({
-            success: false,
-            message: err.message
-        })
-
-    }
-}
-
-const updatedata = async (req, res) => {
-  const { id } = req.params
-
   try {
-    const updatedPatient = await Patient.findOneAndUpdate(
-      { _id: id, user: req.user.id },   // 🔐 ownership check
+    const {
+      name,
+      age,
+      gender,
+      mobileNumber,
+      appointmentDate,
+      doctorId
+    } = req.body
+
+    // 1️⃣ basic validation
+    if (
+      !name ||
+      !age ||
+      !gender ||
+      !mobileNumber ||
+      !appointmentDate ||
+      !doctorId
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      })
+    }
+
+    // 2️⃣ mobile validation
+    if (mobileNumber.length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number must be 10 digits"
+      })
+    }
+
+    // 3️⃣ check doctor exists
+    const doctorExists = await Doctor.findById(doctorId)
+    if (!doctorExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found"
+      })
+    }
+
+    // 4️⃣ create appointment
+    await Patient.create({
+      name,
+      age,
+      gender,
+      mobileNumber,
+      appointmentDate,
+      user: req.user.id,     // patient (JWT)
+      doctor: doctorId       // selected doctor
+    })
+
+    res.status(201).json({
+      success: true,
+      message: "Appointment booked successfully"
+    })
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
+}
+
+/**
+ * VIEW APPOINTMENTS (Patient)
+ */
+const view = async (req, res) => {
+  try {
+    const appointments = await Patient.find({
+      user: req.user.id
+    })
+      .populate("doctor", "name specialization")
+      .sort({ appointmentDate: 1 })
+
+    res.status(200).json({
+      success: true,
+      data: appointments
+    })
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
+}
+
+/**
+ * VIEW SINGLE APPOINTMENT
+ */
+const viewbyid = async (req, res) => {
+  try {
+    const appointment = await Patient.findOne({
+      _id: req.params.id,
+      user: req.user.id
+    }).populate("doctor", "name specialization")
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found"
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      data: appointment
+    })
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "Invalid ID"
+    })
+  }
+}
+
+/**
+ * UPDATE APPOINTMENT (Patient)
+ */
+const updatedata = async (req, res) => {
+  try {
+    const updatedAppointment = await Patient.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.id },
       req.body,
       { new: true }
     )
 
-    if (!updatedPatient) {
+    if (!updatedAppointment) {
       return res.status(403).json({
         success: false,
         message: "You are not allowed to update this appointment"
@@ -116,32 +154,42 @@ const updatedata = async (req, res) => {
   }
 }
 
+/**
+ * DELETE APPOINTMENT (Patient)
+ */
+const deletedata = async (req, res) => {
+  try {
+    const appointment = await Patient.findOne({
+      _id: req.params.id,
+      user: req.user.id
+    })
 
-const viewbyid = async (req, res) => {
-    try {
-        const { id } = req.params
-
-        const foundUser = await Patient.findById(id)
-
-        if (!foundUser) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            })
-        }
-
-        res.status(200).json({
-            success: true,
-            data: foundUser
-        })
-    } catch (err) {
-        res.status(400).json({
-            success: false,
-            message: "Invalid ID"
-        })
+    if (!appointment) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to delete this appointment"
+      })
     }
+
+    await appointment.deleteOne()
+
+    res.status(200).json({
+      success: true,
+      message: "Appointment deleted successfully"
+    })
+
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: err.message
+    })
+  }
 }
 
-
-
-module.exports = { create, view, deletedata, updatedata, viewbyid }
+module.exports = {
+  create,
+  view,
+  viewbyid,
+  updatedata,
+  deletedata
+}

@@ -1,11 +1,12 @@
-import axios from "axios";
-import React, { useState } from "react";
+import api from "../api/api"
+
+import React, { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const Form = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+
 
   const [patient, setPatient] = useState({
     name: "",
@@ -15,6 +16,10 @@ const Form = () => {
     gender: "",
     appointmentDate: "",
   });
+
+  const [doctors, setDoctors] = useState([])
+  const [doctorId, setDoctorId] = useState("")
+
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -36,8 +41,6 @@ const Form = () => {
 
     if (!patient.name.trim()) newErrors.name = "Patient name is required";
     if (!patient.age) newErrors.age = "Age is required";
-    if (!patient.doctorname.trim())
-      newErrors.doctorname = "Doctor name is required";
 
     if (!patient.mobileNumber) {
       newErrors.mobileNumber = "Mobile number is required";
@@ -60,19 +63,8 @@ const Form = () => {
 
     try {
       setLoading(true);
-
-      await axios.post(
-        "http://localhost:4000/api/create",
-        patient,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+     await api.post("/create", {...patient,doctorId})
       toast.success("Patient added successfully 🏥");
-
       setTimeout(() => {
         navigate("/view");
       }, 1000);
@@ -85,6 +77,20 @@ const Form = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+  const fetchDoctors = async () => {
+    try {
+      const res = await api.get("/doctor/list")
+      setDoctors(res.data.data)
+    } catch (err) {
+      toast.error("Failed to load doctors")
+    }
+  }
+
+  fetchDoctors()
+}, [])
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
@@ -139,14 +145,20 @@ const Form = () => {
             <label className="block mb-1 text-sm font-medium">
               Doctor Name
             </label>
-            <input
-              id="doctorname"
-              value={patient.doctorname}
-              onChange={handleChange}
-              className={`input ${
-                errors.doctorname && "input-error"
-              }`}
-            />
+            <select
+          value={doctorId}
+          onChange={(e) => setDoctorId(e.target.value)}
+          required
+>
+  <option value="">Select Doctor</option>
+
+  {doctors.map(doc => (
+    <option key={doc._id} value={doc._id}>
+      {doc.name} ({doc.specialization})
+    </option>
+  ))}
+</select>
+
             {errors.doctorname && (
               <p className="error">{errors.doctorname}</p>
             )}
