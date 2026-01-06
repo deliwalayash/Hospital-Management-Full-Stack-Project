@@ -13,6 +13,7 @@ import Privateroutes from './routes/Privateroutes'
 import DoctorLogin from "./components/DoctorLogin";
 import{ Toaster }from 'sonner'
 import DoctorDashboard from './components/DoctorDashboard'
+import DoctorProtectedRoute from "./routes/DoctorProtectedRoute"
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
     <Route path='/signup' element={<SignUp></SignUp>}></Route>
     <Route path='/login' element={<Login></Login>}></Route>
     <Route path='/doctor/login' element={<DoctorLogin></DoctorLogin>}></Route>
+    <Route path='/doctor/dashboard' element={<DoctorProtectedRoute><DoctorDashboard></DoctorDashboard></DoctorProtectedRoute>}></Route>
     <Route path='/edit/:id' element={<Editform></Editform>}></Route>
   </Routes>
   </BrowserRouter>

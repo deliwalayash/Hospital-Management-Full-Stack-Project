@@ -34,7 +34,13 @@ const patientSchema= new mongoose.Schema({
         ref:"Doctor",
         required:true
     
-    }
+    },
+    status: {
+  type: String,
+  enum: ["pending", "approved", "rejected", "completed"],
+  default: "pending"
+}
+
 },
 {timestamps:true})
 

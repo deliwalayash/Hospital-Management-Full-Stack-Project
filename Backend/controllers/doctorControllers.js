@@ -1,4 +1,5 @@
 const Doctor = require("../models/doctorModel")
+const Patient=require("../models/patientModel")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
@@ -92,4 +93,45 @@ const getDoctorAppointments = async (req, res) => {
   }
 }
 
-module.exports =   {createDoctor ,loginDoctor,getDoctorAppointments}
+const updateAppointmentStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    if (!["approved", "rejected", "completed"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status"
+      });
+    }
+
+    const appointment = await Patient.findOne({
+      _id: id,
+      doctor: req.user.id   // 🔐 ensures doctor owns appointment
+    });
+
+    if (!appointment) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    appointment.status = status;
+    await appointment.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Appointment status updated"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+module.exports =   {createDoctor ,loginDoctor,getDoctorAppointments,
+  updateAppointmentStatus}

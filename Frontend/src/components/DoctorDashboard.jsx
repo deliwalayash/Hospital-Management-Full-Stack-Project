@@ -29,6 +29,21 @@ const DoctorDashboard = () => {
       </div>
     );
   }
+  const updateStatus = async (id, status) => {
+  try {
+    await api.put(`/doctor/appointments/${id}/status`, { status });
+    toast.success("Status updated");
+
+    setAppointments(prev =>
+      prev.map(a =>
+        a._id === id ? { ...a, status } : a
+      )
+    );
+  } catch {
+    toast.error("Failed to update");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-24">
@@ -55,6 +70,7 @@ const DoctorDashboard = () => {
                   <th className="px-6 py-3">Gender</th>
                   <th className="px-6 py-3">Mobile</th>
                   <th className="px-6 py-3">Appointment Date</th>
+                  <th className="px-6 py-3">Status</th>
                 </tr>
               </thead>
 
@@ -74,6 +90,28 @@ const DoctorDashboard = () => {
                       <td className="px-6 py-4">
                         {new Date(item.appointmentDate).toLocaleDateString()}
                       </td>
+                      <td className="px-6 py-4">
+  <span className={`badge badge-${item.status}`}>
+    {item.status}
+  </span>
+</td>
+
+<td className="px-6 py-4 flex gap-2">
+  <button
+    onClick={() => updateStatus(item._id, "approved")}
+    className="btn-green"
+  >
+    Approve
+  </button>
+
+  <button
+    onClick={() => updateStatus(item._id, "rejected")}
+    className="btn-red"
+  >
+    Reject
+  </button>
+</td>
+
                     </tr>
                   ))
                 ) : (

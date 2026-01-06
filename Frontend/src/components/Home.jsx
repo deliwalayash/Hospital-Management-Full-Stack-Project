@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -32,12 +33,9 @@ const Home = () => {
                 Book Appointment
               </a>
 
-              <a
-                href="/login"
-                className="px-6 py-3 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-              >
+              <Link to="/doctor/login" className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-lg shadow-blue-600/30">
                 Doctor Login
-              </a>
+              </Link>
             </div>
           </div>
 

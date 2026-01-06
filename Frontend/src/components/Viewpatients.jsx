@@ -71,6 +71,7 @@ const Viewpatients = () => {
                 <th className="px-6 py-3">Mobile</th>
                 <th className="px-6 py-3">Appointment Date</th>
                 <th className="px-6 py-3">Action</th>
+                <th className="px-6 py-3">Status</th>
               </tr>
             </thead>
 
@@ -108,6 +109,11 @@ const Viewpatients = () => {
                         Delete
                       </button>
                     </td>
+                    <td className="px-6 py-4">
+  <span className={`badge badge-${curEle.status}`}>
+    {curEle.status}
+  </span>
+</td>
                   </tr>
                 ))
               ) : (

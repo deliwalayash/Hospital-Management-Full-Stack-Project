@@ -26,8 +26,9 @@ const DoctorLogin = () => {
       const res = await api.post("/doctor/login", form);
 
       // 🔐 store doctor token separately
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", "doctor");
+      localStorage.setItem("doctorToken", res.data.token);
+localStorage.setItem("role", "doctor");
+
 
       toast.success("Doctor login successful 👨‍⚕️");
 
