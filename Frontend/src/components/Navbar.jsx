@@ -1,64 +1,89 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { getUser, logout } from "../utils/auth";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // 👈 magic trigger
 
-  // ✅ READ TOKEN DIRECTLY (no state, no useEffect)
-  const token = localStorage.getItem("token");
+  const [user, setUser] = useState(null);
+
+  // ✅ Re-sync user whenever route changes
+  useEffect(() => {
+    const u = getUser();
+    setUser(u);
+  }, [location.pathname]);
+
+  const role = user?.role;
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    logout();
+    setUser(null);
+    navigate("/");
   };
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-800">
-      <div className="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 backdrop-blur bg-white/90 border-b">
+      <div className="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
 
         {/* LOGO */}
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">
-            MediCare
-          </span>
-          <span className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
-            Hospital System
-          </span>
+        <Link to="/" className="text-2xl font-bold text-blue-600">
+          MediCare
         </Link>
 
-        {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* MENU */}
+        <div className="flex gap-6 items-center">
+
           <Link to="/" className="nav-link">Home</Link>
 
-          {token ? (
+          {/* 👤 PATIENT */}
+          {role === "user" && (
             <>
               <Link to="/book" className="nav-link">
                 Book Appointment
               </Link>
 
               <Link to="/view" className="nav-link">
-                View Appointment
+                View Appointments
               </Link>
 
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
               >
                 Logout
               </button>
             </>
-          ) : (
+          )}
+
+          {/* 🩺 DOCTOR */}
+          {role === "doctor" && (
+            <>
+              <Link to="/doctor/dashboard" className="nav-link">
+                Dashboard
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </>
+          )}
+
+          {/* 🚪 NOT LOGGED IN */}
+          {!role && (
             <>
               <Link to="/login" className="nav-link">
                 Login
               </Link>
 
               <Link
-                to="/signup"
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                to="/doctor/login"
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
               >
-                Sign Up
+                Doctor Login
               </Link>
             </>
           )}

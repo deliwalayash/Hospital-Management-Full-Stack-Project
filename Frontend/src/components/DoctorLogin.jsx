@@ -11,6 +11,14 @@ const DoctorLogin = () => {
     password: ""
   });
 
+  const role = localStorage.getItem("role");
+
+if (role === "user") {
+  toast.error("Please logout patient account first 🙏");
+  return;
+}
+
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -27,6 +35,7 @@ const DoctorLogin = () => {
 
       // 🔐 store doctor token separately
       localStorage.setItem("doctorToken", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.doctor));
 localStorage.setItem("role", "doctor");
 
 

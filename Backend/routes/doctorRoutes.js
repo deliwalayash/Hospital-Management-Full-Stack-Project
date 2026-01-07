@@ -2,8 +2,6 @@ const express = require("express")
 const router = express.Router()
 const Doctor = require("../models/doctorModel")
 const isDoctor=require('../middleware/doctormiddleware')
-
-
 const { createDoctor,loginDoctor,getDoctorAppointments,
   updateAppointmentStatus}  = require("../controllers/doctorControllers")
 const { protect } = require("../middleware/authmiddleware")
@@ -18,7 +16,6 @@ router.put(
   isDoctor,
   updateAppointmentStatus
 );
-
 
 router.get("/list", protect, async (req, res) => {
   const doctors = await Doctor.find({ isAvailable: true })

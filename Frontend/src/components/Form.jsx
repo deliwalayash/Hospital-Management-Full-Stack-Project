@@ -7,6 +7,14 @@ import { toast } from "sonner";
 const Form = () => {
   const navigate = useNavigate();
 
+  const role = localStorage.getItem("role");
+
+if (role === "doctor") {
+  toast.error("Doctor already logged in 🚫");
+  return;
+}
+
+
 
   const [patient, setPatient] = useState({
     name: "",

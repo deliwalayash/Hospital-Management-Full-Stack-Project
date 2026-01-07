@@ -12,6 +12,9 @@ export const isLoggedIn = () => {
 }
 
 export const logout = () => {
-  localStorage.removeItem("token")
-  localStorage.removeItem("user")
-}
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("role");
+  localStorage.removeItem("doctorToken"); // if exists
+};
+
