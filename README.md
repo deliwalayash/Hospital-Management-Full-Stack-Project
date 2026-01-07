@@ -9,7 +9,7 @@ Atlas**, deployed using **Render (Backend)** and **Vercel (Frontend)**.
 
 ## 🌐 Live Demo
 
--   **Frontend (Vercel):** https://your-vercel-url.vercel.app\
+-   **Frontend (Vercel):** https://hospital-management-full-stack-proj.vercel.app/
 -   **Backend API (Render):**
     https://hospital-management-full-stack-project-y4gv.onrender.com
 
